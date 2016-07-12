@@ -16,6 +16,8 @@ func main() {
 	router.HandleFunc("/accounts", UpdateAccount).Methods("PUT")
 	router.HandleFunc("/accounts", RemoveAccount).Methods("DELETE")
 
+	fmt.Printf("Hello world\n")
+
 }
 
 func GetAccounts(w http.ResponseWriter, r *http.Request) {
