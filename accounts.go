@@ -1,13 +1,11 @@
 package main
 
-import (
-	"fmt"
-)
+import ()
 
 type Account struct {
-	Username string
-	Password string
-	Url      string
+	Username string `json:"username"`
+	Password string `json:"password"`
+	Url      string `json:"url"`
 }
 
 type Accounts []Account
