@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"html"
@@ -23,17 +24,21 @@ func main() {
 }
 
 func GetAccounts(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Get accounts %q", html.EscapeString(r.URL.Path))
+	fmt.Fprintf(w, "Get accounts %q\n", html.EscapeString(r.URL.Path))
+
+	account := Account{Username: "test-username", Password: "test-password", Url: "test-url"}
+
+	json.NewEncoder(w).Encode(account)
 }
 
 func AddAccount(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Add account %q", html.EscapeString(r.URL.Path))
+	fmt.Fprintf(w, "Add account %q\n", html.EscapeString(r.URL.Path))
 }
 
 func UpdateAccount(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Update account %q", html.EscapeString(r.URL.Path))
+	fmt.Fprintf(w, "Update account %q\n", html.EscapeString(r.URL.Path))
 }
 
 func RemoveAccount(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Remove account %q", html.EscapeString(r.URL.Path))
+	fmt.Fprintf(w, "Remove account %q\n", html.EscapeString(r.URL.Path))
 }
