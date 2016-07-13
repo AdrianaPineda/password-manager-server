@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"html"
+	"log"
 	"net/http"
 )
 
@@ -12,11 +13,12 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 
 	router.HandleFunc("/users/{userId}/accounts", GetAccounts).Methods("GET")
-	router.HandleFunc("/accounts", AddAccount).Methods("POST")
-	router.HandleFunc("/accounts", UpdateAccount).Methods("PUT")
-	router.HandleFunc("/accounts", RemoveAccount).Methods("DELETE")
+	router.HandleFunc("/users/{userId}/accounts", AddAccount).Methods("POST")
+	router.HandleFunc("/users/{userId}/accounts", UpdateAccount).Methods("PUT")
+	router.HandleFunc("/users/{userId}/accounts", RemoveAccount).Methods("DELETE")
 
-	fmt.Printf("Hello world\n")
+	fmt.Printf("API initialized\n")
+	log.Fatal(http.ListenAndServe(":8080", router))
 
 }
 
