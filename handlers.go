@@ -3,8 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"html"
+	"io"
+	"io/ioutil"
 	"net/http"
 )
 
