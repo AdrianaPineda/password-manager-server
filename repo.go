@@ -36,3 +36,7 @@ func DestroyAccount(id int) error {
 
 	return fmt.Errorf("Could not find account for with id %d to delete", id)
 }
+
+func GetAllAccounts() Accounts {
+	return accounts
+}

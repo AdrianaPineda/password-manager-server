@@ -12,12 +12,10 @@ import (
 func GetAccounts(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Get accounts %q\n", html.EscapeString(r.URL.Path))
 
-	account_1 := Account{Username: "test-username-1", Password: "test-password-1", Url: "test-url-1"}
-	account_2 := Account{Username: "test-username-2", Password: "test-password-2", Url: "test-url-2"}
-	accounts := Accounts{account_1, account_2}
-
 	//w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	//w.WriteHeader(http.StatusOK)
+
+	accounts = GetAllAccounts()
 
 	if err := json.NewEncoder(w).Encode(accounts); err != nil {
 		panic(err)
