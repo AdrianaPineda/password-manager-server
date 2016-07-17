@@ -24,3 +24,15 @@ func CreateAccount(account Account) Account {
 	accounts = append(accounts, account)
 	return account
 }
+
+func DestroyAccount(id int) error {
+
+	for i, t := range accounts {
+		if t.Id == id {
+			accounts = append(accounts[:i], accounts[i+1:]...)
+			return nil
+		}
+	}
+
+	return fmt.Errorf("Could not find account for with id %d to delete", id)
+}
