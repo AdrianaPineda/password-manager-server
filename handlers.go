@@ -10,10 +10,9 @@ import (
 )
 
 func GetAccounts(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Get accounts %q\n", html.EscapeString(r.URL.Path))
 
-	//w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	//w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
 
 	accounts = GetAllAccounts()
 
@@ -23,7 +22,6 @@ func GetAccounts(w http.ResponseWriter, r *http.Request) {
 }
 
 func AddAccount(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Add account %q\n", html.EscapeString(r.URL.Path))
 
 	var account Account
 
@@ -45,8 +43,8 @@ func AddAccount(w http.ResponseWriter, r *http.Request) {
 	}
 
 	newAccount := CreateAccount(account)
-	// w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	// w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusCreated)
 
 	if err := json.NewEncoder(w).Encode(newAccount); err != nil {
 		panic(err)
