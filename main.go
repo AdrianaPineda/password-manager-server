@@ -26,9 +26,11 @@ func main() {
 func GetAccounts(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Get accounts %q\n", html.EscapeString(r.URL.Path))
 
-	account := Account{Username: "test-username", Password: "test-password", Url: "test-url"}
+	account_1 := Account{Username: "test-username-1", Password: "test-password-1", Url: "test-url-1"}
+	account_2 := Account{Username: "test-username-2", Password: "test-password-2", Url: "test-url-2"}
+	accounts := Accounts{account_1, account_2}
 
-	json.NewEncoder(w).Encode(account)
+	json.NewEncoder(w).Encode(accounts)
 }
 
 func AddAccount(w http.ResponseWriter, r *http.Request) {
