@@ -54,6 +54,16 @@ func AddAccount(w http.ResponseWriter, r *http.Request) {
 func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 	var account Account
 
+	vars := mux.Vars(r)
+	accountIdAsString := vars["accountId"]
+	accountIdAsInt, err := strconv.Atoi(accountIdAsString)
+
+	if err != nil {
+		panic(err)
+	}
+
+	account.Id = accountIdAsInt
+
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
 		panic(err)
