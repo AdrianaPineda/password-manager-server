@@ -40,3 +40,14 @@ func DestroyAccount(id int) error {
 func GetAllAccounts() Accounts {
 	return accounts
 }
+
+func UpdateSingleAccount(account Account) Account {
+
+	if err := DestroyAccount(account.Id); err != nil {
+		return Account{}
+	}
+
+	accounts = append(accounts, account)
+
+	return account
+}
