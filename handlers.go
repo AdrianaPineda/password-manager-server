@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	account "github.com/AdrianaPineda/password-manager-server/account"
 	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
@@ -23,7 +24,7 @@ func GetAccounts(w http.ResponseWriter, r *http.Request) {
 
 func AddAccount(w http.ResponseWriter, r *http.Request) {
 
-	var account Account
+	var account account.Account
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
@@ -52,7 +53,7 @@ func AddAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateAccount(w http.ResponseWriter, r *http.Request) {
-	var account Account
+	var account account.Account
 
 	vars := mux.Vars(r)
 	accountIdAsString := vars["accountId"]
