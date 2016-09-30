@@ -2,11 +2,14 @@ package main
 
 import (
 	"fmt"
+	database "github.com/AdrianaPineda/password-manager-server/database"
 	"log"
 	"net/http"
 )
 
 func main() {
+
+	database.InitDB("user=adrianaPineda dbname = adrianaPineda sslmode=disable")
 
 	router := NewRouter()
 

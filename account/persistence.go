@@ -5,6 +5,14 @@ import (
 	"log"
 )
 
+type AccountDAO struct {
+	err error
+}
+
+func CreateAccount() {
+
+}
+
 func GetAccounts(db *sql.DB, userId int) (Accounts, error) {
 
 	rows, err := db.Query("select * from accounts where user_id = ?", userId)

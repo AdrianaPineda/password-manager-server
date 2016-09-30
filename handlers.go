@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	account "github.com/AdrianaPineda/password-manager-server/account"
+	user "github.com/AdrianaPineda/password-manager-server/user"
 	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
@@ -107,4 +109,55 @@ func RemoveAccount(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusOK)
+}
+
+func CreateUser(w http.ResponseWriter, r *http.Request) {
+
+	var currentUser user.User
+
+	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
+	if err != nil {
+		panic(err)
+	}
+
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+
+	if err := json.Unmarshal(body, &currentUser); err != nil {
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(422) // unprocessable entity
+		if err := json.NewEncoder(w).Encode(err); err != nil {
+			panic(err)
+		}
+	}
+
+	newUserId, createError := user.AddUser(currentUser)
+
+	if createError != nil {
+		panic(createError)
+	}
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+	w.WriteHeader(http.StatusCreated)
+
+	if err := json.NewEncoder(w).Encode(newUserId); err != nil {
+		panic(err)
+	}
+}
+
+func GetUsers(w http.ResponseWriter, r *http.Request) {
+	if r.Method != "GET" {
+		http.Error(w, http.StatusText(405), 405)
+		return
+	}
+
+	users, err := user.GetUsers()
+	if err != nil {
+		http.Error(w, http.StatusText(500), 500)
+		return
+	}
+	for _, user := range users {
+		fmt.Fprintf(w, "%d, %s", user.Id, user.UserName)
+	}
 }
