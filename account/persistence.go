@@ -2,6 +2,7 @@ package account
 
 import (
 	"database/sql"
+	database "github.com/AdrianaPineda/password-manager-server/database"
 	"log"
 )
 
@@ -9,7 +10,12 @@ type AccountDAO struct {
 	err error
 }
 
-func CreateAccount() {
+func CreateAccountInDB(account Account) (int, error) {
+
+	var accountId int
+	err := database.DB.QueryRow("INSERT INTO accounts(username, password, url) VALUES($1, $2, $3) RETURNING id", account.Username, account.Password, account.Url).Scan(&accountId)
+
+	return accountId, err
 
 }
 

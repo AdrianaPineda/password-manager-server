@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"fmt"
 	account "github.com/AdrianaPineda/password-manager-server/account"
 	user "github.com/AdrianaPineda/password-manager-server/user"
 	"github.com/gorilla/mux"
@@ -24,9 +23,9 @@ func GetAccounts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func AddAccount(w http.ResponseWriter, r *http.Request) {
+func CreateAccount(w http.ResponseWriter, r *http.Request) {
 
-	var account account.Account
+	var currentAccount account.Account
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
@@ -37,7 +36,7 @@ func AddAccount(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	if err := json.Unmarshal(body, &account); err != nil {
+	if err := json.Unmarshal(body, &currentAccount); err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
 		if err := json.NewEncoder(w).Encode(err); err != nil {
@@ -45,11 +44,16 @@ func AddAccount(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	newAccount := CreateAccount(account)
+	newAccountId, createError := account.CreateAccountInDB(currentAccount)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusCreated)
 
-	if err := json.NewEncoder(w).Encode(newAccount); err != nil {
+	if createError != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	} else {
+		w.WriteHeader(http.StatusCreated)
+	}
+
+	if err := json.NewEncoder(w).Encode(newAccountId); err != nil {
 		panic(err)
 	}
 }
@@ -175,19 +179,4 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-}
-func GetUsers(w http.ResponseWriter, r *http.Request) {
-	if r.Method != "GET" {
-		http.Error(w, http.StatusText(405), 405)
-		return
-	}
-
-	users, err := user.GetUsers()
-	if err != nil {
-		http.Error(w, http.StatusText(500), 500)
-		return
-	}
-	for _, user := range users {
-		fmt.Fprintf(w, "%d, %s", user.Id, user.UserName)
-	}
 }

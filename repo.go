@@ -24,7 +24,7 @@ func FindAccountById(id int) account.Account {
 	return account.Account{}
 }
 
-func CreateAccount(account account.Account) account.Account {
+func CreateAccount2(account account.Account) account.Account {
 
 	db, err := sql.Open(driverName, dbCredentials)
 
