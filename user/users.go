@@ -6,7 +6,7 @@ import (
 
 type User struct {
 	Id       int              `json:"id"`
-	UserName string           `json:"userName"`
+	UserName string           `json:"username"`
 	Password string           `json:"password"`
 	Accounts account.Accounts `json:"accounts"`
 }

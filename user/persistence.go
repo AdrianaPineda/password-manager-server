@@ -33,7 +33,7 @@ func GetUsers() ([]*User, error) {
 func AddUser(user User) (int, error) {
 
 	var userid int
-	err := database.DB.QueryRow("INSERT INTO users(username, password) VALUES('test1', 'test1') RETURNING id").Scan(&userid)
+	err := database.DB.QueryRow("INSERT INTO users(username, password) VALUES($1, $2) RETURNING id", user.UserName, user.Password).Scan(&userid)
 
 	return userid, err
 }
