@@ -15,6 +15,7 @@ type Routes []Route
 
 var routes = Routes{
 	Route{Name: "Create user", Method: "POST", Pattern: "/users", HandlerFunc: CreateUser},
+	Route{Name: "Get user", Method: "GET", Pattern: "/users/{userId}", HandlerFunc: GetUser},
 
 	Route{Name: "Get accounts", Method: "GET", Pattern: "/users/{userId}/accounts", HandlerFunc: GetAccounts},
 	Route{Name: "Add Account", Method: "POST", Pattern: "/users/{userId}/accounts", HandlerFunc: AddAccount},

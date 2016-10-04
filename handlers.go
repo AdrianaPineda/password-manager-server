@@ -111,6 +111,7 @@ func RemoveAccount(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// USER related handlers
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	var currentUser user.User
@@ -132,7 +133,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	newUserId, createError := user.AddUser(currentUser)
+	newUserId, createError := user.CreateUserInDB(currentUser)
 
 	if createError != nil {
 		panic(createError)
@@ -146,6 +147,35 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetUser(w http.ResponseWriter, r *http.Request) {
+
+	vars := mux.Vars(r)
+	currentUserIdAsString := vars["userId"]
+	currentUserIdAsInt, err := strconv.Atoi(currentUserIdAsString)
+
+	if err != nil {
+		panic(err)
+	}
+
+	if err := r.Body.Close(); err != nil {
+		panic(err)
+	}
+
+	user, getError := user.GetUserFromDB(currentUserIdAsInt)
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	if getError != nil {
+		w.WriteHeader(http.StatusNotFound)
+	} else {
+		w.WriteHeader(http.StatusOK)
+
+		if err := json.NewEncoder(w).Encode(user); err != nil {
+			panic(err)
+		}
+	}
+
+}
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	if r.Method != "GET" {
 		http.Error(w, http.StatusText(405), 405)

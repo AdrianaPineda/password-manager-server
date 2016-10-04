@@ -30,10 +30,18 @@ func GetUsers() ([]*User, error) {
 	return users, nil
 }
 
-func AddUser(user User) (int, error) {
+func CreateUserInDB(user User) (int, error) {
 
 	var userid int
 	err := database.DB.QueryRow("INSERT INTO users(username, password) VALUES($1, $2) RETURNING id", user.UserName, user.Password).Scan(&userid)
 
 	return userid, err
+}
+
+func GetUserFromDB(userId int) (User, error) {
+
+	var user User
+	err := database.DB.QueryRow("SELECT * FROM users WHERE id = $1", userId).Scan(&user.Id, &user.UserName, &user.Password)
+
+	return user, err
 }
