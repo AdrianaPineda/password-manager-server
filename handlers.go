@@ -25,6 +25,14 @@ func GetAccounts(w http.ResponseWriter, r *http.Request) {
 
 func CreateAccount(w http.ResponseWriter, r *http.Request) {
 
+	vars := mux.Vars(r)
+	userIdAsString := vars["userId"]
+	userIdAsInt, err := strconv.Atoi(userIdAsString)
+
+	if err != nil {
+		panic(err)
+	}
+
 	var currentAccount account.Account
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
@@ -44,17 +52,22 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	newAccountId, createError := account.CreateAccountInDB(currentAccount)
+	newAccountId, createError := account.CreateAccountInDB(currentAccount, userIdAsInt)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	if createError != nil {
 		w.WriteHeader(http.StatusBadRequest)
+
+		if err := json.NewEncoder(w).Encode(err); err != nil {
+			panic(err)
+		}
+
 	} else {
 		w.WriteHeader(http.StatusCreated)
-	}
 
-	if err := json.NewEncoder(w).Encode(newAccountId); err != nil {
-		panic(err)
+		if err := json.NewEncoder(w).Encode(newAccountId); err != nil {
+			panic(err)
+		}
 	}
 }
 

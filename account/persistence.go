@@ -10,10 +10,10 @@ type AccountDAO struct {
 	err error
 }
 
-func CreateAccountInDB(account Account) (int, error) {
+func CreateAccountInDB(account Account, userId int) (int, error) {
 
 	var accountId int
-	err := database.DB.QueryRow("INSERT INTO accounts(username, password, url) VALUES($1, $2, $3) RETURNING id", account.Username, account.Password, account.Url).Scan(&accountId)
+	err := database.DB.QueryRow("INSERT INTO accounts(username, password, url, userId) VALUES($1, $2, $3, $4) RETURNING id", account.Username, account.Password, account.Url, userId).Scan(&accountId)
 
 	return accountId, err
 
