@@ -71,7 +71,7 @@ func UpdateUserInDB(user User) (User, error) {
 }
 
 // DELETE
-func DeleteUserFromDB(user User) error {
+func DeleteUserFromDB(userId int) error {
 
 	smt, err := database.DB.Prepare("DELETE FROM users WHERE id = $1")
 
@@ -85,7 +85,7 @@ func DeleteUserFromDB(user User) error {
 		log.Fatal(err)
 	}
 
-	_, err = smt.Exec(user.Id)
+	_, err = smt.Exec(userId)
 
 	return err
 }
