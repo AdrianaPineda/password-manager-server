@@ -71,3 +71,21 @@ func UpdateUserInDB(user User) (User, error) {
 }
 
 // DELETE
+func DeleteUserFromDB(user User) error {
+
+	smt, err := database.DB.Prepare("DELETE FROM users WHERE id = $1")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer smt.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = smt.Exec(user.Id)
+
+	return err
+}
