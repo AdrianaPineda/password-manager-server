@@ -2,9 +2,28 @@ package user
 
 import (
 	database "github.com/AdrianaPineda/password-manager-server/database"
+	"log"
 )
 
-func GetUsers() ([]*User, error) {
+// CREATE
+func CreateUserInDB(user User) (int, error) {
+
+	var userid int
+	err := database.DB.QueryRow("INSERT INTO users(username, password) VALUES($1, $2) RETURNING id", user.UserName, user.Password).Scan(&userid)
+
+	return userid, err
+}
+
+// READ
+func GetUserFromDB(userId int) (User, error) {
+
+	var user User
+	err := database.DB.QueryRow("SELECT * FROM users WHERE id = $1", userId).Scan(&user.Id, &user.UserName, &user.Password)
+
+	return user, err
+}
+
+func GetUsersFromDB() ([]*User, error) {
 
 	rows, err := database.DB.Query("SELECT * FROM users")
 
@@ -30,18 +49,25 @@ func GetUsers() ([]*User, error) {
 	return users, nil
 }
 
-func CreateUserInDB(user User) (int, error) {
+// UPDATE
+func UpdateUserInDB(user User) (User, error) {
 
-	var userid int
-	err := database.DB.QueryRow("INSERT INTO users(username, password) VALUES($1, $2) RETURNING id", user.UserName, user.Password).Scan(&userid)
+	smt, err := database.DB.Prepare("UPDATE users SET username = $1, password = $2 WHERE id = $3")
 
-	return userid, err
-}
+	if err != nil {
+		log.Fatal(err)
+	}
 
-func GetUserFromDB(userId int) (User, error) {
+	defer smt.Close()
 
-	var user User
-	err := database.DB.QueryRow("SELECT * FROM users WHERE id = $1", userId).Scan(&user.Id, &user.UserName, &user.Password)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = smt.Exec(user.UserName, user.Password, user.Id)
 
 	return user, err
+
 }
+
+// DELETE
