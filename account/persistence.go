@@ -73,3 +73,23 @@ func UpdateAccountInDB(account Account) (Account, error) {
 	return account, err
 
 }
+
+// DELETE
+func DeleteAccountFromDB(accountId int) error {
+
+	smt, err := database.DB.Prepare("DELETE FROM accounts WHERE id = $1")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer smt.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = smt.Exec(accountId)
+
+	return err
+}

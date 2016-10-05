@@ -134,7 +134,7 @@ func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func RemoveAccount(w http.ResponseWriter, r *http.Request) {
+func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	accountIdAsString := vars["accountId"]
@@ -144,7 +144,7 @@ func RemoveAccount(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	if err := DestroyAccount(accountIdAsInt); err != nil {
+	if err := account.DeleteAccountFromDB(accountIdAsInt); err != nil {
 		panic(err)
 	}
 
