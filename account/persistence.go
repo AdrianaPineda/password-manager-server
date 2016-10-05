@@ -9,6 +9,7 @@ type AccountDAO struct {
 	err error
 }
 
+// CREATE
 func CreateAccountInDB(account Account, userId int) (int, error) {
 
 	var accountId int
@@ -18,6 +19,7 @@ func CreateAccountInDB(account Account, userId int) (int, error) {
 
 }
 
+// READ
 func GetAccountsOfUserFromDB(userId int) (Accounts, error) {
 
 	rows, err := database.DB.Query("SELECT * from accounts where userId = $1", userId)
@@ -49,4 +51,25 @@ func GetAccountsOfUserFromDB(userId int) (Accounts, error) {
 	}
 
 	return currentAccounts, err
+}
+
+// UPDATE
+func UpdateAccountInDB(account Account) (Account, error) {
+
+	smt, err := database.DB.Prepare("UPDATE accounts SET username = $1, password = $2, url = $3 WHERE id = $4")
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	defer smt.Close()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = smt.Exec(account.Username, account.Password, account.Url, account.Id)
+
+	return account, err
+
 }

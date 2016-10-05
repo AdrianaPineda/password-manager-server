@@ -89,7 +89,7 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateAccount(w http.ResponseWriter, r *http.Request) {
-	var account account.Account
+	var currentAccount account.Account
 
 	vars := mux.Vars(r)
 	accountIdAsString := vars["accountId"]
@@ -99,7 +99,7 @@ func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	account.Id = accountIdAsInt
+	currentAccount.Id = accountIdAsInt
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
@@ -110,7 +110,7 @@ func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	if err := json.Unmarshal(body, &account); err != nil {
+	if err := json.Unmarshal(body, &currentAccount); err != nil {
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.WriteHeader(422) // unprocessable entity
 		if err := json.NewEncoder(w).Encode(err); err != nil {
@@ -118,9 +118,16 @@ func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	updatedAccount := UpdateSingleAccount(account)
+	updatedAccount, updateError := account.UpdateAccountInDB(currentAccount)
+
+	if updateError != nil {
+		log.Printf("%v", updateError)
+		w.WriteHeader(http.StatusNotFound)
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
+
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
 
 	if err := json.NewEncoder(w).Encode(updatedAccount); err != nil {
 		panic(err)
