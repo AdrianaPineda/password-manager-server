@@ -174,10 +174,6 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	if err := r.Body.Close(); err != nil {
-		panic(err)
-	}
-
 	user, getError := user.GetUserFromDB(currentUserIdAsInt)
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
@@ -188,6 +184,24 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 
 		if err := json.NewEncoder(w).Encode(user); err != nil {
+			panic(err)
+		}
+	}
+
+}
+
+func GetUsers(w http.ResponseWriter, r *http.Request) {
+
+	users, getError := user.GetUsersFromDB()
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	if getError != nil {
+		w.WriteHeader(http.StatusNotFound)
+	} else {
+		w.WriteHeader(http.StatusOK)
+
+		if err := json.NewEncoder(w).Encode(users); err != nil {
 			panic(err)
 		}
 	}

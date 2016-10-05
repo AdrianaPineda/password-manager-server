@@ -37,7 +37,7 @@ func GetUsersFromDB() ([]*User, error) {
 
 	for rows.Next() {
 		user := new(User)
-		err := rows.Scan(&user.Id, &user.UserName)
+		err := rows.Scan(&user.Id, &user.UserName, &user.Password)
 		if err != nil {
 			return nil, err
 		}
