@@ -1,7 +1,6 @@
 package account
 
 import (
-	"database/sql"
 	database "github.com/AdrianaPineda/password-manager-server/database"
 	"log"
 )
@@ -19,9 +18,9 @@ func CreateAccountInDB(account Account, userId int) (int, error) {
 
 }
 
-func GetAccounts(db *sql.DB, userId int) (Accounts, error) {
+func GetAccountsOfUserFromDB(userId int) (Accounts, error) {
 
-	rows, err := db.Query("select * from accounts where user_id = ?", userId)
+	rows, err := database.DB.Query("SELECT * from accounts where userId = $1", userId)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -36,7 +35,7 @@ func GetAccounts(db *sql.DB, userId int) (Accounts, error) {
 		url      string
 	)
 	for rows.Next() {
-		err := rows.Scan(&id, &username, &password, &url)
+		err := rows.Scan(&id, &username, &password, &url, &userId)
 		if err != nil {
 			log.Fatal(err)
 		}

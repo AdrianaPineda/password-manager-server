@@ -11,12 +11,26 @@ import (
 	"strconv"
 )
 
+// Account related handlers
 func GetAccounts(w http.ResponseWriter, r *http.Request) {
 
-	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
+	vars := mux.Vars(r)
+	userIdAsString := vars["userId"]
+	userIdAsInt, err := strconv.Atoi(userIdAsString)
 
-	accounts = GetAllAccounts()
+	if err != nil {
+		panic(err)
+	}
+
+	accounts, err := account.GetAccountsOfUserFromDB(userIdAsInt)
+
+	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+
+	if err != nil {
+		w.WriteHeader(http.StatusNotFound)
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
 
 	if err := json.NewEncoder(w).Encode(accounts); err != nil {
 		panic(err)
