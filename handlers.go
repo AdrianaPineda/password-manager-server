@@ -17,18 +17,32 @@ import (
 const userIdFromUrl = "userId"
 const accountIdFromUrl = "accountId"
 
+func getParamAsIntFromRoute(key string, r *http.Request) (int, error) {
+
+	vars := mux.Vars(r)
+	paramAsString := vars[key]
+	paramAsInt, err := strconv.Atoi(paramAsString)
+
+	return paramAsInt, err
+}
+
+func getStringToIntError(value string) ErrorResponse {
+
+	errorMessage := fmt.Sprintf("Error parsing %s: is not a valid int", value)
+
+	errorResponse := ErrorResponse{Message: errorMessage}
+
+	return errorResponse
+}
+
 // Account related handlers
 func GetAccounts(w http.ResponseWriter, r *http.Request) {
 
-	vars := mux.Vars(r)
-	userIdAsString := vars[userIdFromUrl]
-	userIdAsInt, err := strconv.Atoi(userIdAsString)
+	userIdAsInt, err := getParamAsIntFromRoute(userIdFromUrl, r)
 
 	if err != nil {
 
-		errorMessage := fmt.Sprintf("Error parsing %s: %s is not a valid int", userIdFromUrl, userIdAsString)
-
-		errorResponse := ErrorResponse{Message: errorMessage}
+		errorResponse := getStringToIntError(userIdFromUrl)
 
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorResponse)
@@ -53,14 +67,11 @@ func GetAccounts(w http.ResponseWriter, r *http.Request) {
 
 func CreateAccount(w http.ResponseWriter, r *http.Request) {
 
-	vars := mux.Vars(r)
-	userIdAsString := vars[userIdFromUrl]
-	userIdAsInt, err := strconv.Atoi(userIdAsString)
+	userIdAsInt, err := getParamAsIntFromRoute(userIdFromUrl, r)
 
 	if err != nil {
-		errorMessage := fmt.Sprintf("Error parsing %s: %s is not a valid int", userIdFromUrl, userIdAsString)
 
-		errorResponse := ErrorResponse{Message: errorMessage}
+		errorResponse := getStringToIntError(userIdFromUrl)
 
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(errorResponse)
