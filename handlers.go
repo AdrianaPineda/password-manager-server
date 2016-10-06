@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	account "github.com/AdrianaPineda/password-manager-server/account"
 	user "github.com/AdrianaPineda/password-manager-server/user"
 	"github.com/gorilla/mux"
@@ -12,15 +13,27 @@ import (
 	"strconv"
 )
 
+// Constants
+const userIdFromUrl = "userId"
+const accountIdFromUrl = "accountId"
+
 // Account related handlers
 func GetAccounts(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	userIdAsString := vars["userId"]
+	userIdAsString := vars[userIdFromUrl]
 	userIdAsInt, err := strconv.Atoi(userIdAsString)
 
 	if err != nil {
-		panic(err)
+
+		errorMessage := fmt.Sprintf("Error parsing %s: %s is not a valid int", userIdFromUrl, userIdAsString)
+
+		errorResponse := ErrorResponse{Message: errorMessage}
+
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorResponse)
+
+		return
 	}
 
 	accounts, err := account.GetAccountsOfUserFromDB(userIdAsInt)
@@ -41,7 +54,7 @@ func GetAccounts(w http.ResponseWriter, r *http.Request) {
 func CreateAccount(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	userIdAsString := vars["userId"]
+	userIdAsString := vars[userIdFromUrl]
 	userIdAsInt, err := strconv.Atoi(userIdAsString)
 
 	if err != nil {
@@ -92,7 +105,7 @@ func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 	var currentAccount account.Account
 
 	vars := mux.Vars(r)
-	accountIdAsString := vars["accountId"]
+	accountIdAsString := vars[accountIdFromUrl]
 	accountIdAsInt, err := strconv.Atoi(accountIdAsString)
 
 	if err != nil {
@@ -137,7 +150,7 @@ func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	accountIdAsString := vars["accountId"]
+	accountIdAsString := vars[accountIdFromUrl]
 	accountIdAsInt, err := strconv.Atoi(accountIdAsString)
 
 	if err != nil {
@@ -191,7 +204,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 func GetUser(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	currentUserIdAsString := vars["userId"]
+	currentUserIdAsString := vars[userIdFromUrl]
 	currentUserIdAsInt, err := strconv.Atoi(currentUserIdAsString)
 
 	if err != nil {
@@ -237,7 +250,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	var currentUser user.User
 
 	vars := mux.Vars(r)
-	currentUserIdAsString := vars["userId"]
+	currentUserIdAsString := vars[userIdFromUrl]
 	currentUserIdAsInt, err := strconv.Atoi(currentUserIdAsString)
 
 	currentUser.Id = currentUserIdAsInt
@@ -280,7 +293,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	currentUserIdAsString := vars["userId"]
+	currentUserIdAsString := vars[userIdFromUrl]
 	currentUserIdAsInt, err := strconv.Atoi(currentUserIdAsString)
 
 	if err != nil {
