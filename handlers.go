@@ -58,7 +58,14 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	userIdAsInt, err := strconv.Atoi(userIdAsString)
 
 	if err != nil {
-		panic(err)
+		errorMessage := fmt.Sprintf("Error parsing %s: %s is not a valid int", userIdFromUrl, userIdAsString)
+
+		errorResponse := ErrorResponse{Message: errorMessage}
+
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(errorResponse)
+
+		return
 	}
 
 	var currentAccount account.Account
