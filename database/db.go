@@ -6,17 +6,19 @@ import (
 	"log"
 )
 
-var DB *sql.DB
+var db *sql.DB
 
-func InitDB(dataSourceName string) {
+func InitDB(dataSourceName string) (*sql.DB, error) {
 	var err error
-	DB, err = sql.Open("postgres", dataSourceName)
+	db, err = sql.Open("postgres", dataSourceName)
 
 	if err != nil {
 		log.Panic(err)
 	}
 
-	if err = DB.Ping(); err != nil {
+	if err = db.Ping(); err != nil {
 		log.Panic(err)
 	}
+
+	return db, err
 }

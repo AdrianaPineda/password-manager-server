@@ -9,7 +9,7 @@ import (
 
 func main() {
 
-	database.InitDB("user=adrianaPineda dbname = adrianaPineda sslmode=disable")
+	database, err := database.InitDB("user=adrianaPineda dbname = adrianaPineda sslmode=disable")
 
 	router := NewRouter()
 
