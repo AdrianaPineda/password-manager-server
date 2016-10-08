@@ -1,9 +1,9 @@
-package main
+package account
 
 import (
 	"encoding/json"
 	"fmt"
-	account "github.com/AdrianaPineda/password-manager-server/account"
+	infrast "github.com/AdrianaPineda/password-manager-server/infrastructure"
 	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
@@ -25,11 +25,11 @@ func getParamAsIntFromRoute(key string, r *http.Request) (int, error) {
 	return paramAsInt, err
 }
 
-func getStringToIntError(value string) ErrorResponse {
+func getStringToIntError(value string) infrast.ErrorResponse {
 
 	errorMessage := fmt.Sprintf("Error parsing %s: is not a valid int", value)
 
-	errorResponse := ErrorResponse{Message: errorMessage}
+	errorResponse := infrast.ErrorResponse{Message: errorMessage}
 
 	return errorResponse
 }
@@ -49,7 +49,7 @@ func GetAccounts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accounts, err := account.GetAccountsOfUserFromDB(userIdAsInt)
+	accounts, err := GetAccountsOfUserFromDB(userIdAsInt)
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
@@ -78,7 +78,7 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var currentAccount account.Account
+	var currentAccount Account
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
@@ -97,7 +97,7 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	newAccountId, createError := account.CreateAccountInDB(currentAccount, userIdAsInt)
+	newAccountId, createError := CreateAccountInDB(currentAccount, userIdAsInt)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	if createError != nil {
@@ -119,7 +119,7 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateAccount(w http.ResponseWriter, r *http.Request) {
-	var currentAccount account.Account
+	var currentAccount Account
 
 	vars := mux.Vars(r)
 	accountIdAsString := vars[accountIdFromUrl]
@@ -148,7 +148,7 @@ func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	updatedAccount, updateError := account.UpdateAccountInDB(currentAccount)
+	updatedAccount, updateError := UpdateAccountInDB(currentAccount)
 
 	if updateError != nil {
 		log.Printf("%v", updateError)
@@ -174,7 +174,7 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	if err := account.DeleteAccountFromDB(accountIdAsInt); err != nil {
+	if err := DeleteAccountFromDB(accountIdAsInt); err != nil {
 		panic(err)
 	}
 
