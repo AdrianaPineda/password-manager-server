@@ -1,6 +1,7 @@
 package main
 
 import (
+	user "github.com/AdrianaPineda/password-manager-server/user"
 	"net/http"
 )
 
@@ -14,11 +15,11 @@ type Route struct {
 type Routes []Route
 
 var routes = Routes{
-	Route{Name: "Create user", Method: "POST", Pattern: "/users", HandlerFunc: CreateUser},
-	Route{Name: "Get user", Method: "GET", Pattern: "/users/{userId:[0-9]+}", HandlerFunc: GetUser},
-	Route{Name: "Get users", Method: "GET", Pattern: "/users", HandlerFunc: GetUsers},
-	Route{Name: "Update user", Method: "PUT", Pattern: "/users/{userId:[0-9]+}", HandlerFunc: UpdateUser},
-	Route{Name: "Delete user", Method: "DELETE", Pattern: "/users/{userId:[0-9]+}", HandlerFunc: DeleteUser},
+	Route{Name: "Create user", Method: "POST", Pattern: "/users", HandlerFunc: user.CreateUser},
+	Route{Name: "Get user", Method: "GET", Pattern: "/users/{userId:[0-9]+}", HandlerFunc: user.GetUser},
+	Route{Name: "Get users", Method: "GET", Pattern: "/users", HandlerFunc: user.GetUsers},
+	Route{Name: "Update user", Method: "PUT", Pattern: "/users/{userId:[0-9]+}", HandlerFunc: user.UpdateUser},
+	Route{Name: "Delete user", Method: "DELETE", Pattern: "/users/{userId:[0-9]+}", HandlerFunc: user.DeleteUser},
 
 	Route{Name: "Get accounts", Method: "GET", Pattern: "/users/{userId:[0-9]+}/accounts", HandlerFunc: GetAccounts},
 	Route{Name: "Add Account", Method: "POST", Pattern: "/users/{userId:[0-9]+}/accounts", HandlerFunc: CreateAccount},
