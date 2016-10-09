@@ -22,8 +22,8 @@ func main() {
 		panic(err)
 	}
 
-	accountAPI := createAccountAPI(database)
 	userAPI := createUserAPI(database)
+	accountAPI := createAccountAPI(database, userAPI.UserBusiness)
 
 	accountRoutes := getAccountRoutes(accountAPI)
 	userRoutes := getUserRoutes(userAPI)
@@ -37,19 +37,6 @@ func main() {
 
 }
 
-func createAccountAPI(database *sql.DB) (accountAPI account.AccountAPI) {
-
-	accountDAO := account.AccountDAO{}
-	accountBusiness := account.AccountBusiness{AccountDAO: accountDAO, Database: database}
-	accountAPI = account.AccountAPI{AccountBusiness: accountBusiness}
-
-	if accountAPI == (account.AccountAPI{}) {
-		panic(errors.New("API couldnt not be initialized"))
-	}
-
-	return accountAPI
-}
-
 func createUserAPI(database *sql.DB) (userAPI user.UserAPI) {
 	userDAO := user.UserDAO{}
 	userBusiness := user.UserBusiness{UserDAO: userDAO, Database: database}
@@ -60,4 +47,17 @@ func createUserAPI(database *sql.DB) (userAPI user.UserAPI) {
 	}
 
 	return userAPI
+}
+
+func createAccountAPI(database *sql.DB, userBusiness user.UserBusiness) (accountAPI account.AccountAPI) {
+
+	accountDAO := account.AccountDAO{}
+	accountBusiness := account.AccountBusiness{AccountDAO: accountDAO, Database: database, UserBusiness: userBusiness}
+	accountAPI = account.AccountAPI{AccountBusiness: accountBusiness}
+
+	if accountAPI == (account.AccountAPI{}) {
+		panic(errors.New("API couldnt not be initialized"))
+	}
+
+	return accountAPI
 }

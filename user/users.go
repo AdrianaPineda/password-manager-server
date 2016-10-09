@@ -1,14 +1,11 @@
 package user
 
-import (
-	account "github.com/AdrianaPineda/password-manager-server/account"
-)
+import ()
 
 type User struct {
-	Id       int              `json:"id"`
-	UserName string           `json:"username"`
-	Password string           `json:"password"`
-	Accounts account.Accounts `json:"accounts"`
+	Id       int    `json:"id"`
+	UserName string `json:"username"`
+	Password string `json:"password"`
 }
 
 type Users []User
