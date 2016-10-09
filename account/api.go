@@ -12,6 +12,10 @@ import (
 	"strconv"
 )
 
+type AccountAPI struct {
+	AccountBusiness AccountBusiness
+}
+
 // Constants
 const userIdFromUrl = "userId"
 const accountIdFromUrl = "accountId"
@@ -35,7 +39,7 @@ func getStringToIntError(value string) infrast.ErrorResponse {
 }
 
 // Account related handlers
-func GetAccounts(w http.ResponseWriter, r *http.Request) {
+func (api AccountAPI) GetAccounts(w http.ResponseWriter, r *http.Request) {
 
 	userIdAsInt, err := getParamAsIntFromRoute(userIdFromUrl, r)
 
@@ -49,7 +53,7 @@ func GetAccounts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	accounts, err := GetAccountsOfUserFromDB(userIdAsInt)
+	accounts, err := api.AccountBusiness.GetAccountsForUser(userIdAsInt)
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
@@ -64,7 +68,7 @@ func GetAccounts(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func CreateAccount(w http.ResponseWriter, r *http.Request) {
+func (api AccountAPI) CreateAccount(w http.ResponseWriter, r *http.Request) {
 
 	userIdAsInt, err := getParamAsIntFromRoute(userIdFromUrl, r)
 
@@ -97,7 +101,7 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	newAccountId, createError := CreateAccountInDB(currentAccount, userIdAsInt)
+	newAccountId, createError := api.AccountBusiness.CreateAccount(currentAccount, userIdAsInt)
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	if createError != nil {
@@ -118,7 +122,7 @@ func CreateAccount(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func UpdateAccount(w http.ResponseWriter, r *http.Request) {
+func (api AccountAPI) UpdateAccount(w http.ResponseWriter, r *http.Request) {
 	var currentAccount Account
 
 	vars := mux.Vars(r)
@@ -148,7 +152,7 @@ func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	updatedAccount, updateError := UpdateAccountInDB(currentAccount)
+	updatedAccount, updateError := api.AccountBusiness.UpdateAccount(currentAccount)
 
 	if updateError != nil {
 		log.Printf("%v", updateError)
@@ -164,7 +168,7 @@ func UpdateAccount(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func DeleteAccount(w http.ResponseWriter, r *http.Request) {
+func (api AccountAPI) DeleteAccount(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	accountIdAsString := vars[accountIdFromUrl]
@@ -174,7 +178,7 @@ func DeleteAccount(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	if err := DeleteAccountFromDB(accountIdAsInt); err != nil {
+	if err := api.AccountBusiness.DeleteAccount(accountIdAsInt); err != nil {
 		panic(err)
 	}
 
