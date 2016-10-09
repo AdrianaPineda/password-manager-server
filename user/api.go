@@ -12,7 +12,11 @@ import (
 // Constants
 const userIdFromUrl = "userId"
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
+type UserAPI struct {
+	UserBusiness UserBusiness
+}
+
+func (userAPI UserAPI) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	var currentUser User
 
@@ -33,7 +37,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	newUserId, createError := CreateUserInDB(currentUser)
+	newUserId, createError := userAPI.UserBusiness.CreateUser(currentUser)
 
 	if createError != nil {
 		panic(createError)
@@ -47,7 +51,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetUser(w http.ResponseWriter, r *http.Request) {
+func (userAPI UserAPI) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	currentUserIdAsString := vars[userIdFromUrl]
@@ -57,7 +61,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	user, getError := GetUserFromDB(currentUserIdAsInt)
+	user, getError := userAPI.UserBusiness.GetUser(currentUserIdAsInt)
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
@@ -73,9 +77,9 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func GetUsers(w http.ResponseWriter, r *http.Request) {
+func (userAPI UserAPI) GetUsers(w http.ResponseWriter, r *http.Request) {
 
-	users, getError := GetUsersFromDB()
+	users, getError := userAPI.UserBusiness.GetUsers()
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
@@ -91,7 +95,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func UpdateUser(w http.ResponseWriter, r *http.Request) {
+func (userAPI UserAPI) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	var currentUser User
 
@@ -122,7 +126,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	userUpdated, updateError := UpdateUserInDB(currentUser)
+	userUpdated, updateError := userAPI.UserBusiness.UpdateUser(currentUser)
 
 	if updateError != nil {
 		panic(updateError)
@@ -136,7 +140,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func DeleteUser(w http.ResponseWriter, r *http.Request) {
+func (userAPI UserAPI) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	currentUserIdAsString := vars[userIdFromUrl]
@@ -146,7 +150,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	updateError := DeleteUserFromDB(currentUserIdAsInt)
+	updateError := userAPI.UserBusiness.DeleteUser(currentUserIdAsInt)
 
 	if updateError != nil {
 		panic(updateError)

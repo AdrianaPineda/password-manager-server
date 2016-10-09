@@ -1,31 +1,34 @@
 package user
 
 import (
-	database "github.com/AdrianaPineda/password-manager-server/database"
+	"database/sql"
 	"log"
 )
 
+type UserDAO struct {
+}
+
 // CREATE
-func CreateUserInDB(user User) (int, error) {
+func (userDAO UserDAO) CreateUserInDB(database *sql.DB, user User) (int, error) {
 
 	var userid int
-	err := database.DB.QueryRow("INSERT INTO users(username, password) VALUES($1, $2) RETURNING id", user.UserName, user.Password).Scan(&userid)
+	err := database.QueryRow("INSERT INTO users(username, password) VALUES($1, $2) RETURNING id", user.UserName, user.Password).Scan(&userid)
 
 	return userid, err
 }
 
 // READ
-func GetUserFromDB(userId int) (User, error) {
+func (userDAO UserDAO) GetUserFromDB(database *sql.DB, userId int) (User, error) {
 
 	var user User
-	err := database.DB.QueryRow("SELECT * FROM users WHERE id = $1", userId).Scan(&user.Id, &user.UserName, &user.Password)
+	err := database.QueryRow("SELECT * FROM users WHERE id = $1", userId).Scan(&user.Id, &user.UserName, &user.Password)
 
 	return user, err
 }
 
-func GetUsersFromDB() ([]*User, error) {
+func (userDAO UserDAO) GetUsersFromDB(database *sql.DB) ([]*User, error) {
 
-	rows, err := database.DB.Query("SELECT * FROM users")
+	rows, err := database.Query("SELECT * FROM users")
 
 	if err != nil {
 		return nil, err
@@ -50,9 +53,9 @@ func GetUsersFromDB() ([]*User, error) {
 }
 
 // UPDATE
-func UpdateUserInDB(user User) (User, error) {
+func (userDAO UserDAO) UpdateUserInDB(database *sql.DB, user User) (User, error) {
 
-	smt, err := database.DB.Prepare("UPDATE users SET username = $1, password = $2 WHERE id = $3")
+	smt, err := database.Prepare("UPDATE users SET username = $1, password = $2 WHERE id = $3")
 
 	if err != nil {
 		log.Fatal(err)
@@ -71,9 +74,9 @@ func UpdateUserInDB(user User) (User, error) {
 }
 
 // DELETE
-func DeleteUserFromDB(userId int) error {
+func (userDAO UserDAO) DeleteUserFromDB(database *sql.DB, userId int) error {
 
-	smt, err := database.DB.Prepare("DELETE FROM users WHERE id = $1")
+	smt, err := database.Prepare("DELETE FROM users WHERE id = $1")
 
 	if err != nil {
 		log.Fatal(err)
