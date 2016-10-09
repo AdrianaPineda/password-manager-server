@@ -2,6 +2,7 @@ package user
 
 import (
 	"database/sql"
+	"errors"
 )
 
 type UserBusiness struct {
@@ -22,6 +23,12 @@ func (userBusiness UserBusiness) GetUsers() ([]*User, error) {
 }
 
 func (userBusiness UserBusiness) UpdateUser(user User) (User, error) {
+
+	_, err := userBusiness.UserDAO.GetUserFromDB(userBusiness.Database, user.Id)
+	if err != nil {
+		return user, errors.New("User not found")
+	}
+
 	return userBusiness.UserDAO.UpdateUserInDB(userBusiness.Database, user)
 }
 

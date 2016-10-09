@@ -128,16 +128,24 @@ func (userAPI UserAPI) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 	userUpdated, updateError := userAPI.UserBusiness.UpdateUser(currentUser)
 
-	if updateError != nil {
-		panic(updateError)
-	}
-
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-	w.WriteHeader(http.StatusCreated)
 
-	if err := json.NewEncoder(w).Encode(userUpdated); err != nil {
-		panic(err)
+	if updateError != nil {
+
+		w.WriteHeader(http.StatusNotFound)
+		if err := json.NewEncoder(w).Encode(updateError.Error()); err != nil {
+			panic(err)
+		}
+
+	} else {
+
+		w.WriteHeader(http.StatusOK)
+		if err := json.NewEncoder(w).Encode(userUpdated); err != nil {
+			panic(err)
+		}
+
 	}
+
 }
 
 func (userAPI UserAPI) DeleteUser(w http.ResponseWriter, r *http.Request) {
