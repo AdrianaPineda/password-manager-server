@@ -16,7 +16,7 @@ var userAPI user.UserAPI
 
 func main() {
 
-	database, err := config.InitDB("user=adrianaPineda dbname = adrianaPineda sslmode=disable")
+	database, err := config.InitDB("user=adrianapineda dbname = adrianapineda sslmode=disable")
 
 	if err != nil {
 		panic(err)
