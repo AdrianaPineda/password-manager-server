@@ -59,6 +59,9 @@ func (userAPI UserAPI) CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 
 	apiResponse := SuccessAPIResponse{Message: "User created successfully", User: newUser}
+
+	log.Printf("Success %v", apiResponse)
+
 	if err := json.NewEncoder(w).Encode(apiResponse); err != nil {
 		panic(err)
 	}
