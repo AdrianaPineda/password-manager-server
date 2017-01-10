@@ -10,17 +10,24 @@ type UserBusiness struct {
 	UserDAO  UserDAO
 }
 
-func (userBusiness UserBusiness) CreateUser(user User) (int, error) {
+func (userBusiness UserBusiness) CreateUser(user User) (User, error) {
 
 	if user.Password == "" {
-		return -1, errors.New("Invalid Password")
+		return User{}, errors.New("Invalid Password")
 	}
 
 	if user.UserName == "" {
-		return -1, errors.New("Invalid username")
+		return User{}, errors.New("Invalid username")
 	}
 
-	return userBusiness.UserDAO.CreateUserInDB(userBusiness.Database, user)
+	userid, err := userBusiness.UserDAO.CreateUserInDB(userBusiness.Database, user)
+
+	if err == nil {
+		user.Id = userid
+		return user, nil
+	}
+
+	return User{}, err
 }
 
 func (userBusiness UserBusiness) GetUser(userId int) (User, error) {

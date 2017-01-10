@@ -37,16 +37,28 @@ func (userAPI UserAPI) CreateUser(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	newUserId, createError := userAPI.UserBusiness.CreateUser(currentUser)
+	newUser, createError := userAPI.UserBusiness.CreateUser(currentUser)
 
 	if createError != nil {
-		panic(createError)
+		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
+		w.WriteHeader(http.StatusBadRequest)
+
+		apiResponse := ErrorAPIResponse{Message: "User couldnt be created"}
+
+		log.Printf("Error %v", apiResponse)
+
+		if err := json.NewEncoder(w).Encode(apiResponse); err != nil {
+			panic(err)
+		}
+
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 	w.WriteHeader(http.StatusCreated)
 
-	if err := json.NewEncoder(w).Encode(newUserId); err != nil {
+	apiResponse := SuccessAPIResponse{Message: "User created successfully", User: newUser}
+	if err := json.NewEncoder(w).Encode(apiResponse); err != nil {
 		panic(err)
 	}
 }
