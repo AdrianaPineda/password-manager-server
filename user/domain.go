@@ -30,13 +30,13 @@ func (userBusiness UserBusiness) CreateUser(user User) (User, error) {
 	return User{}, err
 }
 
-func (userBusiness UserBusiness) GetUser(userId int) (User, error) {
+func (userBusiness UserBusiness) GetUser(username string) (User, error) {
 
-	if userId <= 0 {
-		return User{}, errors.New("Invalid id")
+	if len(username) <= 0 && username != "" {
+		return User{}, errors.New("Invalid username")
 	}
 
-	return userBusiness.UserDAO.GetUserFromDB(userBusiness.Database, userId)
+	return userBusiness.UserDAO.GetUserFromDB(userBusiness.Database, username)
 }
 
 func (userBusiness UserBusiness) GetUsers() ([]*User, error) {
@@ -45,7 +45,7 @@ func (userBusiness UserBusiness) GetUsers() ([]*User, error) {
 
 func (userBusiness UserBusiness) UpdateUser(user User) (User, error) {
 
-	_, err := userBusiness.UserDAO.GetUserFromDB(userBusiness.Database, user.Id)
+	_, err := userBusiness.UserDAO.GetUserFromDB(userBusiness.Database, user.UserName)
 	if err != nil {
 		return user, errors.New("User not found")
 	}
@@ -53,12 +53,12 @@ func (userBusiness UserBusiness) UpdateUser(user User) (User, error) {
 	return userBusiness.UserDAO.UpdateUserInDB(userBusiness.Database, user)
 }
 
-func (userBusiness UserBusiness) DeleteUser(userId int) error {
+func (userBusiness UserBusiness) DeleteUser(username string) error {
 
-	_, err := userBusiness.UserDAO.GetUserFromDB(userBusiness.Database, userId)
+	_, err := userBusiness.UserDAO.GetUserFromDB(userBusiness.Database, username)
 	if err != nil {
 		return errors.New("User not found")
 	}
 
-	return userBusiness.UserDAO.DeleteUserFromDB(userBusiness.Database, userId)
+	return userBusiness.UserDAO.DeleteUserFromDB(userBusiness.Database, username)
 }

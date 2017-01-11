@@ -7,11 +7,10 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 // Constants
-const userIdFromUrl = "userId"
+const userNameFromUrl = "username"
 
 type UserAPI struct {
 	UserBusiness UserBusiness
@@ -70,19 +69,20 @@ func (userAPI UserAPI) CreateUser(w http.ResponseWriter, r *http.Request) {
 func (userAPI UserAPI) GetUser(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	currentUserIdAsString := vars[userIdFromUrl]
-	currentUserIdAsInt, err := strconv.Atoi(currentUserIdAsString)
+	currentUserName := vars[userNameFromUrl]
 
-	if err != nil {
-		panic(err)
-	}
-
-	user, getError := userAPI.UserBusiness.GetUser(currentUserIdAsInt)
+	user, getError := userAPI.UserBusiness.GetUser(currentUserName)
 
 	w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 
 	if getError != nil {
 		w.WriteHeader(http.StatusNotFound)
+
+		apiResponse := ErrorAPIResponse{Message: "No user was found with specified username"}
+		if err := json.NewEncoder(w).Encode(apiResponse); err != nil {
+			panic(err)
+		}
+
 	} else {
 		w.WriteHeader(http.StatusOK)
 
@@ -116,14 +116,9 @@ func (userAPI UserAPI) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	var currentUser User
 
 	vars := mux.Vars(r)
-	currentUserIdAsString := vars[userIdFromUrl]
-	currentUserIdAsInt, err := strconv.Atoi(currentUserIdAsString)
+	currentUserName := vars[userNameFromUrl]
 
-	currentUser.Id = currentUserIdAsInt
-
-	if err != nil {
-		panic(err)
-	}
+	currentUser.UserName = currentUserName
 
 	body, err := ioutil.ReadAll(io.LimitReader(r.Body, 1048576))
 	if err != nil {
@@ -167,14 +162,9 @@ func (userAPI UserAPI) UpdateUser(w http.ResponseWriter, r *http.Request) {
 func (userAPI UserAPI) DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
-	currentUserIdAsString := vars[userIdFromUrl]
-	currentUserIdAsInt, err := strconv.Atoi(currentUserIdAsString)
+	currentUserName := vars[userNameFromUrl]
 
-	if err != nil {
-		panic(err)
-	}
-
-	updateError := userAPI.UserBusiness.DeleteUser(currentUserIdAsInt)
+	updateError := userAPI.UserBusiness.DeleteUser(currentUserName)
 
 	if updateError != nil {
 		panic(updateError)

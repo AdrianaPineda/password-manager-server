@@ -18,10 +18,10 @@ func (userDAO UserDAO) CreateUserInDB(database *sql.DB, user User) (int, error) 
 }
 
 // READ
-func (userDAO UserDAO) GetUserFromDB(database *sql.DB, userId int) (User, error) {
+func (userDAO UserDAO) GetUserFromDB(database *sql.DB, username string) (User, error) {
 
 	var user User
-	err := database.QueryRow("SELECT * FROM users WHERE id = $1", userId).Scan(&user.Id, &user.UserName, &user.Password)
+	err := database.QueryRow("SELECT * FROM users WHERE username = $1", username).Scan(&user.Id, &user.UserName, &user.Password)
 
 	return user, err
 }
@@ -74,9 +74,9 @@ func (userDAO UserDAO) UpdateUserInDB(database *sql.DB, user User) (User, error)
 }
 
 // DELETE
-func (userDAO UserDAO) DeleteUserFromDB(database *sql.DB, userId int) error {
+func (userDAO UserDAO) DeleteUserFromDB(database *sql.DB, username string) error {
 
-	smt, err := database.Prepare("DELETE FROM users WHERE id = $1")
+	smt, err := database.Prepare("DELETE FROM users WHERE username = $1")
 
 	if err != nil {
 		log.Fatal(err)
@@ -88,7 +88,7 @@ func (userDAO UserDAO) DeleteUserFromDB(database *sql.DB, userId int) error {
 		log.Fatal(err)
 	}
 
-	_, err = smt.Exec(userId)
+	_, err = smt.Exec(username)
 
 	return err
 }
